@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime
 pd.options.mode.chained_assignment = None
 
@@ -74,6 +75,35 @@ df_donnees.columns = ['id_jour', 'id_dpt', 'nbhosp', 'nbintens', 'nbdeces']
 for i in df_donnees.index:
     df_donnees.at[i, 'id_jour'] = df_jours.loc[df_jours['jour'] == df_donnees.at[i, 'id_jour']].values[0][0]
     df_donnees.at[i, 'id_dpt'] = df_dpt.loc[df_dpt['codedpt'] == df_donnees.at[i, 'id_dpt']]['id_dpt']
+
+df_donnees['caparea'] = np.nan
+# Lot
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 1] = 88
+# Gers
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 2] = 13
+# Tarn-et-Garonne
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 3] = 100 #122
+# Ariège
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 4] = 100 #175
+# Gard
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 5] = 100 #131
+# Aveyron
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 6] = 91
+# Haute-Garonne
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 7] = 64
+# Tarn
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 8] = 100 #121
+# Hautes-Pyrénées
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 9] = 100 #108
+# Pyrénées-Orientales
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 10] = 100 #106
+# Aude
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 11] = 100 #106
+# Hérault
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 12] = 77
+# Lozère
+df_donnees['caparea'].loc[df_donnees['id_dpt'] == 13] = 100
+
 
 print(df_donnees)
 ###############
