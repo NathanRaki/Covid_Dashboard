@@ -9,6 +9,20 @@ data['Date'] = pd.to_datetime(data['Date'], format = '%d/%m/%Y')
 data = data.sort_values(by=['Date'])
 data['Date'] = data['Date'].dt.strftime('%d/%m/%Y')
 
+datafr = pd.read_csv("./csv/datafr.csv", sep=";")
+datafr = datafr[['jour', 'incid_hosp', 'incid_rea', 'incid_dc']]
+datafr = datafr.groupby(['jour']).sum().reset_index()
+datafr['jour'] = pd.to_datetime(datafr['jour'], format = '%Y-%m-%d')
+datafr = datafr.sort_values(by=['jour'])
+datafr['jour'] = datafr['jour'].dt.strftime('%d/%m/%Y')
+data_ariege = data[data['Code du Département'] == 9].join(datafr.set_index('jour'), on='Date')
+data['incid_hosp'] = np.nan
+data['incid_rea'] = np.nan
+data['incid_dc'] = np.nan
+data[data['Code du Département'] == 9] = data_ariege
+
+print(data)
+
 
 def get_year(str):
     return str[-4:]
@@ -53,7 +67,6 @@ for i in range(len(jours)):
     id_mois = df_mois.loc[df_mois['mois'] == mois].values[0][0]
     df_jours.loc[i] = [id, jour, id_mois]
     id+=1
-print(df_jours)
 ############
 
 ### Département ###
@@ -66,46 +79,56 @@ for i in df_dpt.index:
     id+=1
 df_dpt['id_dpt'] = id_dpt
 df_dpt = df_dpt[['id_dpt', 'codedpt', 'nomdpt']]
-print(df_dpt)
+
+df_dpt['pop'] = [171000, # Lot
+                189000, # gers
+                261500, # Tarn-Et-Garonne
+                152000, # Ariège
+                745000, # Gard
+                277900, # Aveyron
+                1390000, # Haute-Garonne
+                387600, # Tarn
+                225000, # Hautes-Pyrénées
+                481691, # Pyrénées-Orientales
+                368000, # Aude
+                1165000, # Hérault
+                75700] # Lozère
 ###################
 
 ### Données ###
-df_donnees = data[['Date', 'Code du Département', 'Nb Quotidien Admis Hospitalisation', 'Nb actuellement en soins intensifs', 'Nb Quotidien Décès']]
-df_donnees.columns = ['id_jour', 'id_dpt', 'nbhosp', 'nbintens', 'nbdeces']
+df_donnees = data[['Date', 'Code du Département', 'Nb Quotidien Admis Hospitalisation', 'Nb actuellement en soins intensifs', 'Nb Quotidien Décès', 'incid_hosp', 'incid_dc']]
+df_donnees.columns = ['id_jour', 'id_dpt', 'nbhosp', 'nbintens', 'nbdeces', 'nbhospfr', 'nbdecesfr']
 for i in df_donnees.index:
     df_donnees.at[i, 'id_jour'] = df_jours.loc[df_jours['jour'] == df_donnees.at[i, 'id_jour']].values[0][0]
     df_donnees.at[i, 'id_dpt'] = df_dpt.loc[df_dpt['codedpt'] == df_donnees.at[i, 'id_dpt']]['id_dpt']
 
-df_donnees['caparea'] = np.nan
+df_donnees['reacapacite'] = np.nan
 # Lot
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 1] = 88
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 1] = 88
 # Gers
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 2] = 13
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 2] = 13
 # Tarn-et-Garonne
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 3] = 100 #122
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 3] = 100 #122
 # Ariège
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 4] = 100 #175
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 4] = 100 #175
 # Gard
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 5] = 100 #131
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 5] = 100 #131
 # Aveyron
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 6] = 91
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 6] = 91
 # Haute-Garonne
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 7] = 64
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 7] = 64
 # Tarn
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 8] = 100 #121
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 8] = 100 #121
 # Hautes-Pyrénées
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 9] = 100 #108
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 9] = 100 #108
 # Pyrénées-Orientales
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 10] = 100 #106
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 10] = 100 #106
 # Aude
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 11] = 100 #106
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 11] = 100 #106
 # Hérault
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 12] = 77
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 12] = 77
 # Lozère
-df_donnees['caparea'].loc[df_donnees['id_dpt'] == 13] = 100
-
-
-print(df_donnees)
+df_donnees['reacapacite'].loc[df_donnees['id_dpt'] == 13] = 100
 ###############
 
 ##### SQL Importing #####
